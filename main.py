@@ -13,7 +13,7 @@ api_key = "H0BH38KRE6F6WY5309EOZXLV6M80AV82SYNGIQ4QB9BURKMHZPNNLCCXVNV139VB"
 vulners_api = vulners.Vulners(api_key)
 
 # Define the target and the ports you want to scan
-target = '207.153.45.197'  
+target = '207.153.45.197'  # Change this since it's my (mohamed) ip address
 ports = '22-443'  # Replace this with the desired port range
 
 # Scan the target
