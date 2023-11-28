@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scanner App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .search-container {
+            margin: 20px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vulnerability Application</h1>
+    <form id="searchForm">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="enter an ip address to scan.">
+            <button type="button" id="searchButton">Search</button>
+        </div>
+    </form>
+
+    <div id="searchResults">
+    </div>
+
+
+<script>
+    // JavaScript functionality
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const searchResults = document.getElementById("searchResults");
+
+    searchButton.addEventListener("click", () => {
+        const searchValue = searchInput.value;
+
+        // Make an HTTP POST request to the backend
+        fetch('/run-nmap', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ipAddress: searchValue }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display Nmap results on the web page.
+            renderResults(data);
+        })
+        .catch(error => {
+            console.error('Request error:', error);
+            searchResults.innerHTML = 'Error during the request.';
+        });
+    });
+
+    function renderResults(data) {
+        // Clear previous results
+        searchResults.innerHTML = '';
+
+        // Check if data is not empty
+        if (data.length === 0) {
+            searchResults.innerHTML = '<p>No results found.</p>';
+            return;
+        }
+
+        // Iterate over each host in the data
+        data.forEach(host => {
+            const hostElem = document.createElement('div');
+            hostElem.innerHTML = `<h3>Host: ${host.host} (${host.hostname}) - State: ${host.state}</h3>`;
+            
+            // List services for each host
+            const servicesList = document.createElement('ul');
+            host.services.forEach(service => {
+                const serviceElem = document.createElement('li');
+                serviceElem.innerHTML = `Port: ${service.port}, Service: ${service.service}, Version: ${service.version}, State: ${service.state}`;
+                
+                // Add vulnerabilities if any
+                if (service.vulnerabilities.length > 0) {
+                    const vulnList = document.createElement('ul');
+                    service.vulnerabilities.forEach(vuln => {
+                        const vulnElem = document.createElement('li');
+                        vulnElem.innerHTML = `Vulnerability: ${vuln.title}, CVSS Score: ${vuln.cvss_score}, Link: <a href="${vuln.link}" target="_blank">Details</a>`;
+                        vulnList.appendChild(vulnElem);
+                    });
+                    serviceElem.appendChild(vulnList);
+                }
+                servicesList.appendChild(serviceElem);
+            });
+            hostElem.appendChild(servicesList);
+            searchResults.appendChild(hostElem);
+        });
+    }
+</script>
+
+
+</body>
+</html>
