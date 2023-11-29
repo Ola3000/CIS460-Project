@@ -7,20 +7,22 @@ app = Flask(__name__)
 
 # Initializing nmap PortScanner and Vulners API with API key
 nm = nmap.PortScanner()
-api_key = "H0BH38KRE6F6WY5309EOZXLV6M80AV82SYNGIQ4QB9BURKMHZPNNLCCXVNV139VB"  
+api_key = "YTGQVFIUJUFPXD8H55YJ5QXFYTN1EVS5T4EBY0DWG9Y9NPO3Q184JEQWKOLATGIQ"
 vulners_api = vulners.Vulners(api_key)
+
 
 # Route to serve the main page
 @app.route('/')
 def index():
     return render_template('GUI.html')
 
+
 # Route to handle nmap scanning request
 @app.route('/run-nmap', methods=['POST'])
 def run_nmap():
     data = request.json
     ip_address = data['ipAddress']
-    ports = '22-443' # Defines the port range for scanning
+    ports = '22-443'  # Defines the port range for scanning
 
     # Runs the nmap scan
     nm.scan(ip_address, ports)
@@ -69,6 +71,7 @@ def run_nmap():
 
     # Returns JSON response with scan results
     return jsonify(scan_results)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
