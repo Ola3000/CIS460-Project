@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Initializing nmap PortScanner and Vulners API with API key
 nm = nmap.PortScanner()
-api_key = "YTGQVFIUJUFPXD8H55YJ5QXFYTN1EVS5T4EBY0DWG9Y9NPO3Q184JEQWKOLATGIQ"
+api_key = "H8GYC5N88M80DWH2OYK0QGEXNWHD7PP4JXAECQF5VJB56HX5X3G6YXTMUUA8E9Y5"
 vulners_api = vulners.Vulners(api_key)
 
 
